@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Tnny Music Editor helps artists write, save, and export song lyrics with a polished studio experience." />
+    <title>Tnny Music Editor</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #050816;
+        --panel: rgba(12, 18, 35, 0.94);
+        --panel-2: #141d35;
+        --text: #f7f9ff;
+        --muted: #93a1c3;
+        --accent: #7c5cff;
+        --accent-2: #20d5b4;
+        --border: rgba(255, 255, 255, 0.1);
+        --shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: radial-gradient(circle at top left, rgba(124, 92, 255, 0.28), transparent 26%), linear-gradient(135deg, var(--bg), #0d1630);
+        color: var(--text);
+      }
+      button, input, textarea { font: inherit; }
+      button {
+        cursor: pointer;
+        border: none;
+        border-radius: 999px;
+        padding: 0.85rem 1.15rem;
+        background: linear-gradient(135deg, var(--accent), #956cff);
+        color: white;
+        transition: transform 180ms ease, box-shadow 180ms ease, opacity 180ms ease;
+        box-shadow: 0 10px 25px rgba(124, 92, 255, 0.25);
+      }
+      button:hover { transform: translateY(-1px); box-shadow: 0 14px 32px rgba(124, 92, 255, 0.32); }
+      button.secondary { background: var(--panel-2); color: var(--text); box-shadow: none; }
+      .app-shell { max-width: 1240px; margin: 0 auto; padding: 2rem 1.2rem 3rem; }
+      .hero {
+        display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: 1.4rem 1.5rem;
+        background: linear-gradient(135deg, rgba(16, 24, 44, 0.95), rgba(20, 31, 56, 0.92)); border: 1px solid var(--border); border-radius: 28px; box-shadow: var(--shadow); margin-bottom: 1.1rem;
+      }
+      .hero-badge {
+        display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.38rem 0.7rem; border-radius: 999px; background: rgba(32, 213, 180, 0.14); color: var(--accent-2); font-size: 0.8rem; font-weight: 700; margin-bottom: 0.7rem; letter-spacing: 0.04em; text-transform: uppercase;
+      }
+      h1 { margin: 0 0 0.5rem; font-size: clamp(1.8rem, 3vw, 2.6rem); }
+      .hero-copy { margin: 0; color: var(--muted); max-width: 680px; line-height: 1.7; }
+      .hero-pills { display: flex; flex-wrap: wrap; gap: 0.65rem; margin-top: 0.9rem; }
+      .hero-pills span { padding: 0.45rem 0.7rem; border-radius: 999px; background: rgba(255, 255, 255, 0.05); color: var(--muted); border: 1px solid rgba(255, 255, 255, 0.08); font-size: 0.92rem; }
+      .hero-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+      .workspace { display: grid; grid-template-columns: 1.8fr 1fr; gap: 1rem; }
+      .panel {
+        background: var(--panel); border: 1px solid var(--border); border-radius: 24px; padding: 1.15rem; box-shadow: var(--shadow);
+      }
+      .panel-heading { display: flex; align-items: center; justify-content: space-between; gap: 0.8rem; margin-bottom: 1rem; }
+      .panel-kicker { margin: 0 0 0.2rem; color: var(--accent-2); font-size: 0.8rem; letter-spacing: 0.18em; text-transform: uppercase; }
+      .panel-heading h2 { margin: 0; font-size: 1.2rem; }
+      .status-pill { padding: 0.45rem 0.75rem; border-radius: 999px; background: rgba(32, 213, 180, 0.14); color: var(--accent-2); font-weight: 700; font-size: 0.9rem; }
+      .field-group { display: flex; flex-direction: column; gap: 0.45rem; margin-bottom: 0.95rem; }
+      label { color: var(--muted); font-weight: 700; }
+      input, textarea { width: 100%; border: 1px solid rgba(255,255,255,0.1); background: var(--panel-2); color: var(--text); border-radius: 14px; padding: 0.9rem 1rem; outline: none; }
+      input:focus, textarea:focus { border-color: rgba(124, 92, 255, 0.7); box-shadow: 0 0 0 3px rgba(124, 92, 255, 0.16); }
+      textarea { resize: vertical; min-height: 300px; }
+      .toolbar { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+      .side-panel { display: flex; flex-direction: column; gap: 0.9rem; }
+      .card { background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border); border-radius: 18px; padding: 1rem; }
+      .card.featured { border-color: rgba(32, 213, 180, 0.24); background: linear-gradient(135deg, rgba(32, 213, 180, 0.09), rgba(124, 92, 255, 0.08)); }
+      .card h2 { margin-top: 0; margin-bottom: 0.45rem; font-size: 1rem; }
+      .card p, .card ul { color: var(--muted); line-height: 1.6; }
+      .card ul { padding-left: 1rem; }
+      .mini-bar { margin-top: 0.7rem; width: 100%; height: 7px; border-radius: 999px; background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
+      .toast { position: fixed; bottom: 1rem; right: 1rem; background: rgba(32, 213, 180, 0.95); color: white; padding: 0.9rem 1rem; border-radius: 999px; opacity: 0; pointer-events: none; transform: translateY(8px); transition: opacity 180ms ease, transform 180ms ease; }
+      .toast.show { opacity: 1; transform: translateY(0); }
+      @media (max-width: 900px) { .workspace { grid-template-columns: 1fr; } }
+      @media (max-width: 700px) { .hero { flex-direction: column; align-items: flex-start; } .hero-actions { width: 100%; } .hero-actions button { flex: 1; } }
+    </style>
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="hero">
+        <div class="hero-copy-wrap">
+          <div class="hero-badge">Professional lyrics studio</div>
+          <h1>Tnny Music Editor</h1>
+          <p class="hero-copy">Turn raw ideas into polished song lyrics with a clean workspace, smart drafting, and one-click export.</p>
+          <div class="hero-pills"><span>Verse</span><span>Chorus</span><span>Bridge</span><span>Export</span></div>
+        </div>
+        <div class="hero-actions">
+          <button id="saveDraftBtn">Save Draft</button>
+          <button id="exportBtn" class="secondary">Export TXT</button>
+        </div>
+      </header>
+      <main class="workspace">
+        <section class="panel editor-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="panel-kicker">Compose</p>
+              <h2>Write your next hit</h2>
+            </div>
+            <div id="statusPill" class="status-pill">Ready to write</div>
+          </div>
+          <div class="field-group">
+            <label for="songTitle">Song Title</label>
+            <input id="songTitle" type="text" placeholder="Enter song title" />
+          </div>
+          <div class="field-group">
+            <label for="artist">Artist</label>
+            <input id="artist" type="text" placeholder="Enter artist name" />
+          </div>
+          <div class="field-group">
+            <label for="lyrics">Lyrics</label>
+            <textarea id="lyrics" rows="18" placeholder="Start writing your verse, chorus, and bridge here..."></textarea>
+          </div>
+          <div class="toolbar">
+            <button id="copyBtn">Copy Lyrics</button>
+            <button id="clearBtn" class="secondary">Clear</button>
+          </div>
+        </section>
+        <aside class="panel side-panel">
+          <div class="card featured">
+            <h2>Premium access</h2>
+            <p>Support the project and unlock more features by paying to Airtel <strong>0729376110</strong>.</p>
+            <button id="paymentBtn">Pay via Airtel</button>
+          </div>
+          <div class="card">
+            <h2>Workflow tips</h2>
+            <ul>
+              <li>Use clear labels like Verse, Chorus, and Bridge.</li>
+              <li>Save often so your work stays safe.</li>
+              <li>Export your lyrics as a text file anytime.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h2>Draft snapshot</h2>
+            <p id="draftStatus">No draft saved yet.</p>
+            <div class="mini-bar"></div>
+          </div>
+        </aside>
+      </main>
+    </div>
+    <div id="toast" class="toast" aria-live="polite"></div>
+    <script>
+      const songTitle = document.getElementById('songTitle');
+      const artist = document.getElementById('artist');
+      const lyrics = document.getElementById('lyrics');
+      const draftStatus = document.getElementById('draftStatus');
+      const statusPill = document.getElementById('statusPill');
+      const toast = document.getElementById('toast');
+      const saveDraftBtn = document.getElementById('saveDraftBtn');
+      const exportBtn = document.getElementById('exportBtn');
+      const copyBtn = document.getElementById('copyBtn');
+      const clearBtn = document.getElementById('clearBtn');
+      const paymentBtn = document.getElementById('paymentBtn');
+      function showToast(message) {
+        toast.textContent = message;
+        toast.classList.add('show');
+        window.clearTimeout(showToast.timeout);
+        showToast.timeout = window.setTimeout(() => toast.classList.remove('show'), 1800);
+      }
+      function updateStatus() {
+        const hasTitle = songTitle.value.trim().length > 0;
+        const hasLyrics = lyrics.value.trim().length > 0;
+        if (hasTitle && hasLyrics) statusPill.textContent = 'Ready to share';
+        else if (hasLyrics) statusPill.textContent = 'Lyrics in progress';
+        else statusPill.textContent = 'Ready to write';
+      }
+      function saveDraft() {
+        const draft = { songTitle: songTitle.value, artist: artist.value, lyrics: lyrics.value, updatedAt: new Date().toLocaleString() };
+        localStorage.setItem('tnny-music-editor-draft', JSON.stringify(draft));
+        draftStatus.textContent = `Last saved: ${draft.updatedAt}`;
+        showToast('Draft saved locally');
+      }
+      function loadDraft() {
+        const saved = localStorage.getItem('tnny-music-editor-draft');
+        if (!saved) { updateStatus(); return; }
+        try {
+          const draft = JSON.parse(saved);
+          songTitle.value = draft.songTitle || '';
+          artist.value = draft.artist || '';
+          lyrics.value = draft.lyrics || '';
+          draftStatus.textContent = `Last saved: ${draft.updatedAt || 'recently'}`;
+          updateStatus();
+        } catch (error) { console.error('Could not load draft', error); }
+      }
+      function exportLyrics() {
+        const content = `Title: ${songTitle.value || 'Untitled'}\nArtist: ${artist.value || 'Unknown'}\n\n${lyrics.value || ''}`;
+        const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `${(songTitle.value || 'lyrics').toLowerCase().replace(/\s+/g, '-') || 'lyrics'}.txt`;
+        document.body.appendChild(link); link.click(); document.body.removeChild(link);
+        showToast('Lyrics exported');
+      }
+      async function copyLyrics() {
+        const content = lyrics.value.trim();
+        if (!content) { showToast('No lyrics to copy'); return; }
+        try { await navigator.clipboard.writeText(content); showToast('Lyrics copied'); }
+        catch (error) { showToast('Copy failed'); }
+      }
+      function clearEditor() {
+        songTitle.value = ''; artist.value = ''; lyrics.value = '';
+        draftStatus.textContent = 'No draft saved yet.'; updateStatus(); showToast('Editor cleared');
+      }
+      songTitle.addEventListener('input', updateStatus);
+      artist.addEventListener('input', updateStatus);
+      lyrics.addEventListener('input', updateStatus);
+      saveDraftBtn.addEventListener('click', saveDraft);
+      exportBtn.addEventListener('click', exportLyrics);
+      copyBtn.addEventListener('click', copyLyrics);
+      clearBtn.addEventListener('click', clearEditor);
+      paymentBtn.addEventListener('click', () => showToast('Pay to Airtel 0729376110 to unlock premium access'));
+      loadDraft();
+    </script>
+  </body>
+</html>
